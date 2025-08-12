@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -27,9 +28,30 @@ void pushQueue( vector<int>& binaryVector, queue<int>& binaryQueue){
     cout<<endl;
     for(int i=0;i<binaryVector.size();i++){
          binaryQueue.push(binaryVector[i]);
-        
     }
     
+    // Write the queue to a file
+    ofstream outFile("queue_data.txt", ios::binary);  // Open file in binary mode
+    if (!outFile) {
+        cerr << "Error opening file for writing." << endl;
+        return;
+    }
+    
+     // Write the size of the queue to the file first
+    size_t queueSize = binaryQueue.size();
+    outFile.write(reinterpret_cast<const char*>(&queueSize), sizeof(queueSize));
+
+    // Write the data from the queue to the file
+    while (!binaryQueue.empty()) {
+        int value = binaryQueue.front();
+        outFile.write(reinterpret_cast<const char*>(&value), sizeof(value));
+        binaryQueue.pop();
+    }
+
+    outFile.close();
+    cout << "Queue created and saved to file 'queue_data.txt'" << endl;
+    
+
 }
 
 // Convert binary vector back to string
@@ -78,6 +100,7 @@ void falseBitOptn(vector<int>& falsebit,vector<int>& falseBitPos){
 
 
 
+
 int main() {
     srand(time(nullptr));
     string inputString;
@@ -113,7 +136,7 @@ int main() {
     //push elemnt from vector to queue 
     pushQueue(binaryVector,binaryQueue);
 
-    // Output the binary queue
+    // Output the binary 
     cout << "\n\nBinary queue (FIFO):\n";
     queue<int> tempQueue = binaryQueue; // copy to preserve original queue
     while (!tempQueue.empty()) {
@@ -121,7 +144,7 @@ int main() {
         tempQueue.pop();
     }
 
-    // Convert back to original string
+    // Convert back to original stringqueue
     convertBinToStr(binaryVector, result);
     cout << "\n\nRecovered string: " << result << endl;
 
